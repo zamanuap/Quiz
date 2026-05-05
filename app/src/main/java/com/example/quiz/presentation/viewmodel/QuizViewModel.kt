@@ -2,6 +2,7 @@ package com.example.quiz.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.quiz.domain.model.Question
 import com.example.quiz.domain.usecase.AnswerSelected
 import com.example.quiz.presentation.state.QuizUiState
 import com.example.quiz.domain.usecase.GetAllQuestionsUseCase
@@ -29,6 +30,7 @@ class QuizViewModel @Inject constructor (
 
     private val _quizUiState = MutableStateFlow(QuizUiState())
     val quizUiState: StateFlow<QuizUiState> = _quizUiState.asStateFlow()
+    var allQuestions: List<Question> = emptyList()
 
     init {
         loadQuiz()
@@ -52,13 +54,34 @@ class QuizViewModel @Inject constructor (
         }
     }
 
+    private suspend fun loadAllQuestions() {
+        allQuestions = getAllQuestions()
+    }
     private fun loadQuiz() {
         viewModelScope.launch {
-            val allQuestions = getAllQuestions()
-            val quizQuestions = getQuizQuestions(allQuestions, minOf(allQuestions.size, 5))
+            //val allQuestions = getAllQuestions()
+            loadAllQuestions()
+            val quizQuestions =
+                getQuizQuestions(allQuestions, minOf(allQuestions.size, 5))
 
             _quizUiState.update {
                 it.copy(quizQuestions = quizQuestions)
+            }
+        }
+    }
+
+    fun reLoadQuiz() {
+        viewModelScope.launch {
+            val reLoadQuizQuestions =
+                getQuizQuestions(allQuestions, minOf(allQuestions.size, 5))
+
+            _quizUiState.update {
+                it.copy(
+                    quizQuestions = reLoadQuizQuestions,
+                    quizSelectedAnswers = emptyMap(),
+                    currentIndex = 0,
+                    timeLeft = 0
+                )
             }
         }
     }
