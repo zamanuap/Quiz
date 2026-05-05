@@ -56,6 +56,7 @@ fun QuizScreen(
                 onClick = {
                     if(uiState.currentIndex == uiState.quizQuestions.lastIndex) {
                         //onClickGoToResultScreen()
+                        viewModel.reLoadQuiz()
                         viewModel.goToResultScreen()
                     }
                     viewModel.nextQuestion()
