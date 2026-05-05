@@ -1,4 +1,4 @@
-package com.example.quiz.screens
+package com.example.quiz.presentation.ui.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,17 +10,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.quiz.questionViewModel.QuestionViewModel
+import com.example.quiz.presentation.viewmodel.QuizViewModel
+
 
 @Composable
 fun QuizScreen(
-    viewModel: QuestionViewModel,
-    onClickGoToResultScreen: () -> Unit
+    viewModel: QuizViewModel,
+    //onClickGoToResultScreen: () -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    val question = uiState.questions[uiState.currentIndex]
+    val uiState by viewModel.quizUiState.collectAsState()
+    val question = uiState.quizQuestions[uiState.currentIndex]
 
     Column {
         Text(question.text)
@@ -28,11 +30,11 @@ fun QuizScreen(
         Spacer(modifier = Modifier.padding(12.dp))
 
         question.options.forEachIndexed { optionIndex, option ->
-            Row {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(
-                    selected = uiState.selectedAnswers[question.id] == optionIndex,
+                    selected = uiState.quizSelectedAnswers[question.id] == optionIndex,
                     onClick = {
-                        viewModel.selectAnswer(question.id, optionIndex)
+                        viewModel.answerSelected(question.id, optionIndex)
                     }
                 )
 
@@ -52,14 +54,17 @@ fun QuizScreen(
             Button(
                 modifier = Modifier.weight(1f).padding(start = 4.dp),
                 onClick = {
-                    if(uiState.currentIndex == uiState.questions.lastIndex) {
-                        onClickGoToResultScreen()
+                    if(uiState.currentIndex == uiState.quizQuestions.lastIndex) {
+                        //onClickGoToResultScreen()
+                        viewModel.goToResultScreen()
                     }
                     viewModel.nextQuestion()
                 }
             ) {
-                Text(if(uiState.currentIndex == uiState.questions.lastIndex) "Finish" else "Next")
+                Text(if(uiState.currentIndex == uiState.quizQuestions.lastIndex) "Finish" else "Next")
             }
         }
     }
 }
+
+

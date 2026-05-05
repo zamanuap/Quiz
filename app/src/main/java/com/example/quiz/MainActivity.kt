@@ -4,10 +4,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.example.quiz.navigation.AppNav
-import com.example.quiz.screens.QuizScreen
-import com.example.quiz.ui.theme.QuizTheme
+import androidx.navigation.Navigation
+import com.example.quiz.presentation.ui.navigation.AppNav
+import com.example.quiz.presentation.ui.theme.QuizTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

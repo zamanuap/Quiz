@@ -1,4 +1,4 @@
-package com.example.quiz.dataModel
+package com.example.quiz.domain.model
 
 import kotlinx.serialization.Serializable
 

@@ -1,10 +1,11 @@
-package com.example.quiz.dataModel
+package com.example.quiz.presentation.state
 
-data class QuestionUiState(
+import com.example.quiz.domain.model.Question
+
+data class StudyUiState(
     val questions: List<Question> = emptyList(),
     val selectedAnswers: Map<Int, Int> = emptyMap(),
     //val correctedAnswer: Set<Int> = emptySet(),
     val currentIndex: Int = 0,
-    val timeLeft: Int = 20,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
 )
