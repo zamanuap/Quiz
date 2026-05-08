@@ -12,6 +12,8 @@ import com.example.quiz.presentation.ui.navigation.AppNavigation
 import com.example.quiz.presentation.ui.navigation.NavEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,6 +33,7 @@ class QuizViewModel @Inject constructor (
     private val _quizUiState = MutableStateFlow(QuizUiState())
     val quizUiState: StateFlow<QuizUiState> = _quizUiState.asStateFlow()
     var allQuestions: List<Question> = emptyList()
+    private var timerJob: Job? = null
 
     init {
         loadQuiz()
@@ -80,7 +83,7 @@ class QuizViewModel @Inject constructor (
                     quizQuestions = reLoadQuizQuestions,
                     quizSelectedAnswers = emptyMap(),
                     currentIndex = 0,
-                    timeLeft = 0
+                    timeLeft = 60
                 )
             }
         }
@@ -115,4 +118,20 @@ class QuizViewModel @Inject constructor (
             quizUiState.value.quizQuestions, quizUiState.value.quizSelectedAnswers
         )
     }
+
+    fun timer() {
+        timerJob?.cancel()
+
+        timerJob = viewModelScope.launch {
+            //for (time in 60 downTo 1) {
+            while(quizUiState.value.timeLeft > 0) {
+                delay(1000)
+                _quizUiState.update {
+                    it.copy(timeLeft = quizUiState.value.timeLeft - 1)
+                }
+            }
+            goToResultScreen()
+        }
+    }
+
 }
