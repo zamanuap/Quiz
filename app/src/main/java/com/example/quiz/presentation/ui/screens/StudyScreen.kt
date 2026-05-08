@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.RadioButton
@@ -16,7 +17,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.quiz.domain.model.Question
 import com.example.quiz.presentation.viewmodel.StudyViewModel
 
@@ -29,7 +32,11 @@ fun StudyScreen(
     val uiState by studyViewModel.uiState.collectAsState()
     val question = uiState.questions[uiState.currentIndex]
     Column() {
-        Text(question.text)
+        Text(
+            question.text,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.SemiBold
+        )
 
         Spacer(modifier = Modifier.padding(16.dp))
 
@@ -93,7 +100,16 @@ fun AnswerOption(
     }
 
 
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = Modifier
+            .selectable(
+                selected = isSelected,
+                onClick = {
+                    viewModel.selectedAnswer(question.id, optionIndex)
+                }
+            ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         RadioButton(
             selected = isSelected,
             onClick = {
@@ -102,6 +118,8 @@ fun AnswerOption(
         )
         Text(
             text = option,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.SemiBold,
             modifier = Modifier
                 .border(1.dp, Color.Blue, RoundedCornerShape(8.dp))
                 .background(bgColor, RoundedCornerShape(8.dp))

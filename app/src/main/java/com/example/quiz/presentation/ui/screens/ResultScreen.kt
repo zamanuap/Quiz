@@ -21,6 +21,7 @@ fun ResultScreen(
         Spacer(modifier = Modifier.padding(16.dp))
         Button(onClick = {
             //onClickGoToHomeScreen()
+            viewModel.reLoadQuiz()
             viewModel.goToHomeScreen()
         }) {
             Text("Go to Home")
