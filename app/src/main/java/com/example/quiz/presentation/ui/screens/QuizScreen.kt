@@ -1,5 +1,6 @@
 package com.example.quiz.presentation.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -19,6 +21,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -41,8 +46,15 @@ fun QuizScreen(
     val seconds = uiState.timeLeft % 60
 
     LaunchedEffect(Unit) {
-        viewModel.timer()
+        viewModel.timerStart()
     }
+
+    BackButtonPress(
+        onExit = {
+            viewModel.goToHomeScreen()
+            viewModel.timerStop()
+        }
+    )
 
     Column {
         Row(
@@ -150,6 +162,53 @@ fun BlinkingText(minutes: Int, seconds: Int) {
         fontSize = 24.sp,
         fontWeight = FontWeight.Bold,
     )
+}
+
+@Composable
+fun BackButtonPress( onExit: () -> Unit) {
+    var showDialog by remember { mutableStateOf(false)}
+
+    BackHandler {
+        showDialog = true
+    }
+
+    if (showDialog) {
+
+        AlertDialog(
+            onDismissRequest = {
+                showDialog = false
+            },
+
+            title = {
+                Text("Exiting Quiz")
+            },
+
+            text = {
+                Text("Do you want to leave?")
+            },
+
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showDialog = false
+                        onExit()
+                    }
+                ) {
+                    Text("Yes")
+                }
+            },
+
+            dismissButton = {
+                Button(
+                    onClick = {
+                        showDialog = false
+                    }
+                ) {
+                    Text("No")
+                }
+            }
+        )
+    }
 }
 
 

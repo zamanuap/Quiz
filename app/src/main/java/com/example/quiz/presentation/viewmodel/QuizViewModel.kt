@@ -1,5 +1,9 @@
 package com.example.quiz.presentation.viewmodel
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.quiz.domain.model.Question
@@ -18,6 +22,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 @HiltViewModel
@@ -119,15 +124,21 @@ class QuizViewModel @Inject constructor (
         )
     }
 
-    fun timer() {
+    fun timerStop() {
         timerJob?.cancel()
+        _quizUiState.update {
+            it.copy(timeLeft = 59)
+        }
+    }
 
+    fun timerStart() {
+        if(timerJob?.isActive == true) return
         timerJob = viewModelScope.launch {
             //for (time in 60 downTo 1) {
-            while(quizUiState.value.timeLeft > 0) {
+            while(isActive && quizUiState.value.timeLeft > 0) {
                 delay(1000)
                 _quizUiState.update {
-                    it.copy(timeLeft = quizUiState.value.timeLeft - 1)
+                    it.copy(timeLeft = it.timeLeft - 1)
                 }
             }
             goToResultScreen()
